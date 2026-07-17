@@ -118,18 +118,18 @@ public class SettingActivity extends AppCompatActivity {
 
         if (height >= 2400) {
             setContentView(R.layout.activity_setting);
-            //Toast.makeText(getApplication(), "当前分辨率" + height + "×" + width, Toast.LENGTH_SHORT).show();
+            //com.shinian.pay.util.AppToast.makeText(getApplication(), "当前分辨率" + height + "×" + width, Toast.LENGTH_SHORT).show();
         } else if (height <= 1920 && height > 1600) {
             setContentView(R.layout.activity_setting_xdpi);
         } else if (height <= 1280 && height > 960) {
             setContentView(R.layout.activity_setting_xdpi);
         } else {
             setContentView(R.layout.activity_setting);
-            //Toast.makeText(getApplication(), "暂未适配1280×720分辨率以下屏幕", Toast.LENGTH_SHORT).show();
+            //com.shinian.pay.util.AppToast.makeText(getApplication(), "暂未适配1280×720分辨率以下屏幕", Toast.LENGTH_SHORT).show();
         }
 
-		version = (TextView) findViewById(R.id.version);       
-        state_switch = (Switch) findViewById(R.id.state_switch);	
+		version = (TextView) findViewById(R.id.version);
+        state_switch = (Switch) findViewById(R.id.state_switch);
         version.setText("当前软件版本V" + getAppVersionName() + "（仅新版本提示更新）");
 
 
@@ -215,7 +215,7 @@ public class SettingActivity extends AppCompatActivity {
 	public void ver_sion(View v) {
         try {
             //检查版本号是否最新接口
-            String urlPath = new String("http://w.t3yanzheng.com/A729B02347E855EC");  
+            String urlPath = new String("http://w.t3yanzheng.com/A729B02347E855EC");
             //String urlPath = new String("http://localhost:8080/Test1/HelloWorld?name=丁丁".getBytes("UTF-8"));
 
 
@@ -259,7 +259,7 @@ public class SettingActivity extends AppCompatActivity {
                 responseReader.close();
                 JSONObject data = new JSONObject(sb.toString());
 
-                code = data.getInt("code");              
+                code = data.getInt("code");
                 ver = data.getString("ver");
                 version1 = data.getInt("version");
                 uplog = data.getString("uplog");
@@ -287,15 +287,15 @@ public class SettingActivity extends AppCompatActivity {
                             .create();
                         dialog.show();
                     }
-                } 
+                }
             }
         } catch (Exception e) {}
     }
-    
-    public String getHtml(String path) throws Exception {  
-        URL url = new URL(path);  
-        HttpURLConnection conn = (HttpURLConnection)url.openConnection();  
-        conn.setRequestMethod("POST");  
+
+    public String getHtml(String path) throws Exception {
+        URL url = new URL(path);
+        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+        conn.setRequestMethod("POST");
         conn.setConnectTimeout(8 * 1000);
         //通过输入流获取html数据
         InputStream inStream = conn.getInputStream();
@@ -303,20 +303,20 @@ public class SettingActivity extends AppCompatActivity {
         byte[] data = readInputStream(inStream);
         //获取指定字符集解码指定的字节数组构造一个新的字符串
         String html = new String(data, "UTF-8");
-        return html;  
+        return html;
     }
 
     //读取输入流 获取HTML二进制数组
-    public byte[] readInputStream(InputStream inStream) throws Exception {  
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();  
-        byte[] buffer = new byte[1024];  
-        int len = 0;  
-        while ((len = inStream.read(buffer)) != -1) {  
-            outStream.write(buffer, 0, len);  
-        }  
-        inStream.close();  
-        return outStream.toByteArray();  
-    }   
+    public byte[] readInputStream(InputStream inStream) throws Exception {
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        while ((len = inStream.read(buffer)) != -1) {
+            outStream.write(buffer, 0, len);
+        }
+        inStream.close();
+        return outStream.toByteArray();
+    }
 
 
 	//反馈
@@ -331,7 +331,7 @@ public class SettingActivity extends AppCompatActivity {
 		Intent help = new Intent();
 		help.setClass(this, HelpActivity.class);
 		startActivity(help);
-		Toast.makeText(this, "下版本待完善...", Toast.LENGTH_SHORT).show();
+		com.shinian.pay.util.AppToast.makeText(this, "下版本待完善...", Toast.LENGTH_SHORT).show();
 	}
 
 	//白名单权限检测
@@ -342,7 +342,7 @@ public class SettingActivity extends AppCompatActivity {
             //跳转到设置里面的电池优化管理列表
             i.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
             startActivity(i);
-            Toast.makeText(getApplication(), "请勾选此应用\"不优化\"", Toast.LENGTH_LONG).show();
+            com.shinian.pay.util.AppToast.makeText(getApplication(), "请勾选此应用\"不优化\"", Toast.LENGTH_LONG).show();
             /*弹窗模式
              Intent i = new Intent();
              i.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
@@ -351,7 +351,7 @@ public class SettingActivity extends AppCompatActivity {
              startActivity(i);
              */
 		} else {
-			Toast.makeText(this, "已授权白名单权限!", Toast.LENGTH_SHORT).show();
+			com.shinian.pay.util.AppToast.makeText(this, "已授权白名单权限!", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -397,7 +397,7 @@ public class SettingActivity extends AppCompatActivity {
 		// 4. 启动播放音乐Service
 		startPlayMusicService();
 
-		Toast.makeText(SettingActivity.this, "服务启动成功!", Toast.LENGTH_SHORT).show();
+		com.shinian.pay.util.AppToast.makeText(SettingActivity.this, "服务启动成功!", Toast.LENGTH_SHORT).show();
 
 	}
 
@@ -419,7 +419,7 @@ public class SettingActivity extends AppCompatActivity {
                         editor.putString("state_switch", "no");
                         editor.commit();
                         state_switch.setHint("开启");
-                        Toast.makeText(SettingActivity.this, "屏幕永亮开启成功，3S后重启...", Toast.LENGTH_SHORT).show();
+                        com.shinian.pay.util.AppToast.makeText(SettingActivity.this, "屏幕永亮开启成功，3S后重启...", Toast.LENGTH_SHORT).show();
                         new Handler(Looper.getMainLooper()).postDelayed(new Runnable(){
 
                                 @Override
@@ -447,7 +447,7 @@ public class SettingActivity extends AppCompatActivity {
             editor.putString("state_switch", "off");
             editor.commit();
             state_switch.setHint("关闭");
-            Toast.makeText(this, "屏幕永亮已关闭，1S后重启...", Toast.LENGTH_SHORT).show();
+            com.shinian.pay.util.AppToast.makeText(this, "屏幕永亮已关闭，1S后重启...", Toast.LENGTH_SHORT).show();
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable(){
 
                     @Override
@@ -465,7 +465,7 @@ public class SettingActivity extends AppCompatActivity {
 
 
 	public void vmq_Pro_gy(View v) {
-		Toast.makeText(this, "下版本待完善...", Toast.LENGTH_SHORT).show();
+		com.shinian.pay.util.AppToast.makeText(this, "下版本待完善...", Toast.LENGTH_SHORT).show();
 	}
 
 

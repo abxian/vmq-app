@@ -35,13 +35,13 @@ public class AliveJobService extends JobService {
         public boolean handleMessage(Message msg) {
             // 具体任务逻辑
             if(SystemUtils.isAPPALive(getApplicationContext(), Contants.PACKAGE_NAME)){
-                Toast.makeText(getApplicationContext(), "APP活着的", Toast.LENGTH_SHORT)
+                com.shinian.pay.util.AppToast.makeText(getApplicationContext(), "APP活着的", Toast.LENGTH_SHORT)
                         .show();
             }else{
                 Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
-                Toast.makeText(getApplicationContext(), "APP被杀死，重启...", Toast.LENGTH_SHORT)
+                com.shinian.pay.util.AppToast.makeText(getApplicationContext(), "APP被杀死，重启...", Toast.LENGTH_SHORT)
                         .show();
             }
             // 通知系统任务执行结束

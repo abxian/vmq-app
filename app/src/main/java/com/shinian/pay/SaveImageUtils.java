@@ -54,7 +54,7 @@ public class SaveImageUtils {
     }
     public static void saveImageToGallerys(Context context, Bitmap bmp) {
         if (bmp == null){
-            Toast.makeText(context, "保存出错了...", Toast.LENGTH_SHORT).show();
+            com.shinian.pay.util.AppToast.makeText(context, "保存出错了...", Toast.LENGTH_SHORT).show();
             return;
         }
         // 首先保存图片
@@ -71,13 +71,13 @@ public class SaveImageUtils {
             fos.flush();
             fos.close();
         } catch (FileNotFoundException e) {
-            Toast.makeText(context, "文件未发现...", Toast.LENGTH_SHORT).show();
+            com.shinian.pay.util.AppToast.makeText(context, "文件未发现...", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         } catch (IOException e) {
-            Toast.makeText(context, "保存出错了...", Toast.LENGTH_SHORT).show();
+            com.shinian.pay.util.AppToast.makeText(context, "保存出错了...", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }catch (Exception e){
-            Toast.makeText(context, "保存出错了...", Toast.LENGTH_SHORT).show();
+            com.shinian.pay.util.AppToast.makeText(context, "保存出错了...", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
@@ -91,11 +91,11 @@ public class SaveImageUtils {
         Uri uri = Uri.fromFile(file);
         intent.setData(uri);
         context.sendBroadcast(intent);
-        Toast.makeText(context, "保存出错了...", Toast.LENGTH_SHORT).show();
+        com.shinian.pay.util.AppToast.makeText(context, "保存出错了...", Toast.LENGTH_SHORT).show();
     }
-    
-    
-    
+
+
+
     /**
      * 适用Android10及以上
      * 保存文件到公共目录
@@ -146,9 +146,9 @@ public class SaveImageUtils {
 			}*/
 			// 最后通知图库更新
 			context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + file.getPath())));
-			
-			
-			
+
+
+
         } else {
             //Android 10及以上版本
 
@@ -189,5 +189,5 @@ public class SaveImageUtils {
         }
         return path;
     }
-    
+
 }

@@ -30,10 +30,10 @@ public class WxPayActivity extends AppCompatActivity {
     }
 
     public void wxpay_go(View v) {
-        Toast.makeText(this, "请选择相册赞赏码~", Toast.LENGTH_LONG).show();
+        com.shinian.pay.util.AppToast.makeText(this, "请选择相册赞赏码~", Toast.LENGTH_LONG).show();
         openWeixinToQE_Code(WxPayActivity.this);
     }
-    
+
 
     /**
      * 打开微信并跳入到二维码扫描页面
@@ -47,7 +47,7 @@ public class WxPayActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         } catch (Exception e) {
-            Toast.makeText(context, "无法跳转到微信，请检查是否安装了微信", Toast.LENGTH_LONG).show();
+            com.shinian.pay.util.AppToast.makeText(context, "无法跳转到微信，请检查是否安装了微信", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -61,7 +61,7 @@ public class WxPayActivity extends AppCompatActivity {
             intent.setAction("android.intent.action.VIEW");
             context.startActivity(intent);
         } catch (Exception e) {
-            Toast.makeText(context, "无法跳转到微信，请检查是否安装了微信", Toast.LENGTH_LONG).show();
+            com.shinian.pay.util.AppToast.makeText(context, "无法跳转到微信，请检查是否安装了微信", Toast.LENGTH_LONG).show();
         }
     }
 

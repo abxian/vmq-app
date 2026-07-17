@@ -144,7 +144,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="心跳失败弹窗"
+                    android:text="禁止提示弹窗"
                     android:textColor="#233052"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
@@ -152,16 +152,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
-                    android:text="关闭后断网信息只写入下方日志"
+                    android:text="开启后提示只写日志，不影响监听回调"
                     android:textColor="#7A86A3"
                     android:textSize="13sp"/>
             </LinearLayout>
 
             <Switch
-                android:id="@+id/switch_heart_alert"
+                android:id="@+id/switch_quiet_mode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="toggleHeartAlert"/>
+                android:onClick="toggleQuietMode"/>
         </LinearLayout>
 
         <LinearLayout

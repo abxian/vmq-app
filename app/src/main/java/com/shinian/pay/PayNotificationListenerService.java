@@ -92,18 +92,14 @@ public class PayNotificationListenerService extends NotificationListenerService 
                                     final String error = e.getMessage();
                                     sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
                                         + "\r\r\r\r心跳失败（后台将继续自动重试）：" + error);
-                                    boolean alertEnabled = getSharedPreferences("ui_settings", MODE_PRIVATE)
-                                        .getBoolean("heart_alert_enabled", true);
-                                    if (alertEnabled) {
-                                        Handler handlerThree=new Handler(Looper.getMainLooper());
-                                        handlerThree.post(new Runnable(){
-                                                public void run() {
-                                                    Toast.makeText(getApplicationContext(),
-                                                        "心跳失败，后台将继续重试\n" + error,
-                                                        Toast.LENGTH_LONG).show();
-                                                }
-                                            });
-                                    }
+                                    Handler handlerThree=new Handler(Looper.getMainLooper());
+                                    handlerThree.post(new Runnable(){
+                                            public void run() {
+                                                com.shinian.pay.util.AppToast.makeText(getApplicationContext(),
+                                                    "心跳失败，后台将继续重试\n" + error,
+                                                    Toast.LENGTH_LONG).show();
+                                            }
+                                        });
                                 }
                                 //请求成功执行的方法
                                 @Override
@@ -125,7 +121,7 @@ public class PayNotificationListenerService extends NotificationListenerService 
     }
 
 
-    /** 
+    /**
      *  当收到一条消息的时候回调，sbn即收到的消息
      */
     @Override
@@ -160,23 +156,23 @@ public class PayNotificationListenerService extends NotificationListenerService 
                                     money = getMoney(content);
                                 }
                                 if (money != null || !money.equals("")) {
-                                    Toast.makeText(this, "匹配成功： 微信到账" + money + "元", Toast.LENGTH_LONG).show();
-                                    Log.d(TAG, "onAccessibilityEvent: 匹配成功： 微信到账 " + money + "元");                             
+                                    com.shinian.pay.util.AppToast.makeText(this, "匹配成功： 微信到账" + money + "元", Toast.LENGTH_LONG).show();
+                                    Log.d(TAG, "onAccessibilityEvent: 匹配成功： 微信到账 " + money + "元");
                                     appPush(1, Double.valueOf(money));
                                     //appPush2(1, Double.valueOf(money));//再次发送回调数据
                                 } else {
                                     Handler handlerThree=new Handler(Looper.getMainLooper());
                                     handlerThree.post(new Runnable(){
                                             public void run() {
-                                                Toast.makeText(getApplicationContext() , "监听到微信收款消息但未匹配到金额！", Toast.LENGTH_SHORT).show();
+                                                com.shinian.pay.util.AppToast.makeText(getApplicationContext() , "监听到微信收款消息但未匹配到金额！", Toast.LENGTH_SHORT).show();
                                             }
                                         });
                                 }
                             } else {
                                //这里处理非付款的逻辑
                             }
-                        } 
-                    }     
+                        }
+                    }
                 } else if (pkg.equals("com.eg.android.AlipayGphone")) {
                     if (content != null || !content.equals("") || !title.equals("")) {
                         //通知消息匹配 contains方法匹配包含关键字
@@ -188,7 +184,7 @@ public class PayNotificationListenerService extends NotificationListenerService 
                                 money = getMoney(content);
                             }
                             if (money != null || !money.equals("")) {
-                                Toast.makeText(this, "匹配成功： 支付宝到账" + money + "元", Toast.LENGTH_LONG).show();
+                                com.shinian.pay.util.AppToast.makeText(this, "匹配成功： 支付宝到账" + money + "元", Toast.LENGTH_LONG).show();
                                 Log.d(TAG, "onAccessibilityEvent: 匹配成功： 支付宝到账 " + money + "元");
                                 appPush(2, Double.valueOf(money));
                                 //appPush2(2, Double.valueOf(money));//再次发送回调数据
@@ -196,7 +192,7 @@ public class PayNotificationListenerService extends NotificationListenerService 
                                 Handler handlerThree=new Handler(Looper.getMainLooper());
                                 handlerThree.post(new Runnable(){
                                         public void run() {
-                                            Toast.makeText(getApplicationContext() , "监听到支付宝收款消息但未匹配到金额！", Toast.LENGTH_SHORT).show();
+                                            com.shinian.pay.util.AppToast.makeText(getApplicationContext() , "监听到支付宝收款消息但未匹配到金额！", Toast.LENGTH_SHORT).show();
                                         }
                                     });
 
@@ -204,8 +200,8 @@ public class PayNotificationListenerService extends NotificationListenerService 
                         } else if (title.contains("交易提醒") || content.contains("支出")) {
                             String money = getMoney(title);
                             if (money != null || !money.equals("")) {
-                                Toast.makeText(getApplication(), "转账订单：支付宝转账" + money + "元", Toast.LENGTH_SHORT).show();
-                            }                     
+                                com.shinian.pay.util.AppToast.makeText(getApplication(), "转账订单：支付宝转账" + money + "元", Toast.LENGTH_SHORT).show();
+                            }
                             //支付宝店员监听
                         } else if (title.contains("店员通") || content.contains("支付宝成功收款")) {
                             String money = getMoney(content);
@@ -213,7 +209,7 @@ public class PayNotificationListenerService extends NotificationListenerService 
                                 money = getMoney(title);
                             }
                             if (money != null || !money.equals("")) {
-                                Toast.makeText(this, "匹配成功： 支付宝店员到账" + money + "元", Toast.LENGTH_LONG).show();
+                                com.shinian.pay.util.AppToast.makeText(this, "匹配成功： 支付宝店员到账" + money + "元", Toast.LENGTH_LONG).show();
                                 Log.d(TAG, "onAccessibilityEvent: 匹配成功： 支付宝店员到账 " + money + "元");
                                 appPush(2, Double.valueOf(money));
                                 //appPush2(2, Double.valueOf(money));//再次发送回调数据
@@ -221,12 +217,12 @@ public class PayNotificationListenerService extends NotificationListenerService 
                                 Handler handlerThree=new Handler(Looper.getMainLooper());
                                 handlerThree.post(new Runnable(){
                                         public void run() {
-                                            Toast.makeText(getApplicationContext() , "监听到支付宝店员收款消息但未匹配到金额！", Toast.LENGTH_SHORT).show();
+                                            com.shinian.pay.util.AppToast.makeText(getApplicationContext() , "监听到支付宝店员收款消息但未匹配到金额！", Toast.LENGTH_SHORT).show();
                                         }
                                     });
                             }
                         }
-                    }                       
+                    }
                 } else if (pkg.equals("com.shinian.vmq")) {
 
                     if (content.equals("测试推送通知，如果程序正常，则会提示监听权限正常")) {
@@ -235,12 +231,12 @@ public class PayNotificationListenerService extends NotificationListenerService 
                         Handler handlerThree=new Handler(Looper.getMainLooper());
                         handlerThree.post(new Runnable(){
                                 public void run() {
-                                    Toast.makeText(getApplicationContext() , "监听权限正常!", Toast.LENGTH_SHORT).show();
+                                    com.shinian.pay.util.AppToast.makeText(getApplicationContext() , "监听权限正常!", Toast.LENGTH_SHORT).show();
                                 }
-                            });                         
+                            });
                     }
-                }            
-            }        
+                }
+            }
         }
     }
 
@@ -265,7 +261,7 @@ public class PayNotificationListenerService extends NotificationListenerService 
         Handler handlerThree = new Handler(Looper.getMainLooper());
         handlerThree.post(new Runnable(){
                 public void run() {
-                    Toast.makeText(getApplicationContext() , "监听服务开启成功!", Toast.LENGTH_SHORT).show();
+                    com.shinian.pay.util.AppToast.makeText(getApplicationContext() , "监听服务开启成功!", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -311,12 +307,12 @@ public class PayNotificationListenerService extends NotificationListenerService 
                         } else {
                             sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\r\r\r\r" + "监听到支付宝收款" + price + "元" + "\t" + "通知回调状态：" + msg + "\n" + "通知回调信息：" + str);
                         }
-                        Toast.makeText(getApplicationContext() , "通知回调成功：" + str, Toast.LENGTH_LONG).show();
+                        com.shinian.pay.util.AppToast.makeText(getApplicationContext() , "通知回调成功：" + str, Toast.LENGTH_LONG).show();
                     } catch (JSONException e) {//创建JSONobject需抛JSON异常
                         String error = e.getMessage();
                         //发送失败监听日志
                         sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\r\r\r\r" + "响应时-通知回调失败：" + error);
-                        Toast.makeText(getApplicationContext() , "通知回调失败！ " + error , Toast.LENGTH_LONG).show();
+                        com.shinian.pay.util.AppToast.makeText(getApplicationContext() , "通知回调失败！ " + error , Toast.LENGTH_LONG).show();
                         //如果通知回调失败则1秒后执行补回调
                         new Handler().postDelayed(new Runnable(){
 
@@ -345,11 +341,11 @@ public class PayNotificationListenerService extends NotificationListenerService 
                                             } else {
                                                 sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\r\r\r\r" + "自动补回调：" + "监听到支付宝收款" + price + "元" + "\t" + "通知回调状态：" + Message + "\n" + "通知回调信息：" + data);
                                             }
-                                            Toast.makeText(getApplicationContext() , "补通知回调成功：" + data, Toast.LENGTH_LONG).show();
+                                            com.shinian.pay.util.AppToast.makeText(getApplicationContext() , "补通知回调成功：" + data, Toast.LENGTH_LONG).show();
                                         }
                                     } catch (Exception e) {
                                         String error = e.getMessage();
-                                        Toast.makeText(getApplication(), "自动补单回调失败！联系作者反馈" + "\n错误详情：" + error, Toast.LENGTH_LONG).show();
+                                        com.shinian.pay.util.AppToast.makeText(getApplication(), "自动补单回调失败！联系作者反馈" + "\n错误详情：" + error, Toast.LENGTH_LONG).show();
                                     }
                                     /*}
                                      });state.start();*/
@@ -391,7 +387,7 @@ public class PayNotificationListenerService extends NotificationListenerService 
 
                 }
             });
-    }   
+    }
 
 
     public static String getMoney(String content) {
@@ -460,10 +456,10 @@ public class PayNotificationListenerService extends NotificationListenerService 
         MainActivity.monitorLogHandler.sendMessage(msg);
     }
 
-    public String getHtml(String path) throws Exception {  
-        URL url = new URL(path);  
-        HttpURLConnection conn = (HttpURLConnection)url.openConnection();  
-        conn.setRequestMethod("GET");  
+    public String getHtml(String path) throws Exception {
+        URL url = new URL(path);
+        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+        conn.setRequestMethod("GET");
         conn.setConnectTimeout(8 * 1000);
         //通过输入流获取html数据
         InputStream inStream = conn.getInputStream();
@@ -471,20 +467,20 @@ public class PayNotificationListenerService extends NotificationListenerService 
         byte[] data = readInputStream(inStream);
         //获取指定字符集解码指定的字节数组构造一个新的字符串
         String html = new String(data, "UTF-8");
-        return html;  
+        return html;
     }
 
     //读取输入流 获取HTML二进制数组
-    public byte[] readInputStream(InputStream inStream) throws Exception {  
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();  
-        byte[] buffer = new byte[1024];  
-        int len = 0;  
-        while ((len = inStream.read(buffer)) != -1) {  
-            outStream.write(buffer, 0, len);  
-        }  
-        inStream.close();  
-        return outStream.toByteArray();  
-    }   
+    public byte[] readInputStream(InputStream inStream) throws Exception {
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        while ((len = inStream.read(buffer)) != -1) {
+            outStream.write(buffer, 0, len);
+        }
+        inStream.close();
+        return outStream.toByteArray();
+    }
 
 
 }

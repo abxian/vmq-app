@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 
     private static final String ALIPAY_PERSON = "https://qr.alipay.com/fkx12542rpb5fljmhxlal35";
 
-    private Thread dlThread;    
+    private Thread dlThread;
 
     @Override
     protected void onCreate(Bundle icicle) {
@@ -150,18 +150,18 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
         try {
             if (height >= 2400) {
                 setContentView(R.layout.activity_main);
-                //Toast.makeText(getApplication(), "当前分辨率" + height + "x" + width, Toast.LENGTH_SHORT).show();
+                //com.shinian.pay.util.AppToast.makeText(getApplication(), "当前分辨率" + height + "x" + width, Toast.LENGTH_SHORT).show();
             } else if (height <= 1920 && height > 1600) {
                 setContentView(R.layout.activity_main_xdpi);
             } else if (height <= 1280 && height > 960) {
                 setContentView(R.layout.activity_main_xdpi);
             } else {
                 setContentView(R.layout.activity_main);
-                //Toast.makeText(getApplication(), "暂未适配1280×720分辨率以下屏幕\n获取分辨率失败", Toast.LENGTH_LONG).show();
+                //com.shinian.pay.util.AppToast.makeText(getApplication(), "暂未适配1280×720分辨率以下屏幕\n获取分辨率失败", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             String error = e.getMessage();
-            Toast.makeText(getApplication(), error , Toast.LENGTH_SHORT).show();
+            com.shinian.pay.util.AppToast.makeText(getApplication(), error , Toast.LENGTH_SHORT).show();
         }
 
         //沉浸式状态栏
@@ -173,9 +173,9 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 		//查找组件
 		txthost = (TextView) findViewById(R.id.txt_host);
 		txtkey = (TextView) findViewById(R.id.txt_key);
-        Switch heartAlertSwitch = (Switch) findViewById(R.id.switch_heart_alert);
-        heartAlertSwitch.setChecked(getSharedPreferences("ui_settings", MODE_PRIVATE)
-            .getBoolean("heart_alert_enabled", true));
+        Switch quietModeSwitch = (Switch) findViewById(R.id.switch_quiet_mode);
+        quietModeSwitch.setChecked(getSharedPreferences("ui_settings", MODE_PRIVATE)
+            .getBoolean("quiet_mode_enabled", false));
         LogsTextView = (TextView) findViewById(R.id.state_logs);
         logs_linear_layout = (LinearLayout) findViewById(R.id.logs_linear_layout);
         LogsTextView.setOnLongClickListener((OnLongClickListener) this);//长按
@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
             try{
             App();
             }catch(Exception e){
-                
+
             }
             //申请读写权限
             //requestMyPermissions();
@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
             //接收并设置日志信息
             SharedPreferences read1 = getSharedPreferences("items", MODE_PRIVATE);
             String logsStr = read1.getString("logsStr", "");
-            if (logsStr.equals("")) { 
+            if (logsStr.equals("")) {
                 LogsTextView.setText("日志：null");
             } else {
                 LogsTextView.setText(logsStr);
@@ -206,16 +206,16 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 
             //检测微信支付宝包名 写在前面
             if (!checkQQInstalled(this, "com.eg.android.AlipayGphone")) {
-                Toast.makeText(getApplication(), "提示：无法检测到支付宝包名！\n可能无法正常监听", Toast.LENGTH_LONG).show();
+                com.shinian.pay.util.AppToast.makeText(getApplication(), "提示：无法检测到支付宝包名！\n可能无法正常监听", Toast.LENGTH_LONG).show();
             } else if (!checkQQInstalled(this, "com.tencent.mm")) {
-                Toast.makeText(getApplication(), "提示：无法检测到微信包名！\n可能无法正常监听", Toast.LENGTH_LONG).show();
+                com.shinian.pay.util.AppToast.makeText(getApplication(), "提示：无法检测到微信包名！\n可能无法正常监听", Toast.LENGTH_LONG).show();
             }
 
             SharedPreferences state = getSharedPreferences("state_switch", MODE_PRIVATE);
             state_swich = state.getString("state_switch", "");
             //屏幕是否常亮
             if (state_swich.equals("no")) {
-                Toast.makeText(getApplication(), "当前处于屏幕常亮模式" + "\n当前界面亮度值：" + ld, Toast.LENGTH_LONG).show();
+                com.shinian.pay.util.AppToast.makeText(getApplication(), "当前处于屏幕常亮模式" + "\n当前界面亮度值：" + ld, Toast.LENGTH_LONG).show();
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);//开启常亮
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//全屏
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER);
@@ -223,10 +223,10 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable(){
 
                         @Override
-                        public void run() {                    
+                        public void run() {
                             WindowManager.LayoutParams lp = getWindow().getAttributes();
                             lp.screenBrightness = Float.valueOf(ld) * (1f / 255f);//亮度值0~255
-                            getWindow().setAttributes(lp);                     
+                            getWindow().setAttributes(lp);
                         }
                     }, 3000);
             }
@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 
             //检测支付宝是否安装
             /*
-             if (checkQQInstalled(this, "com.eg.android.AlipayGphone")) {              
+             if (checkQQInstalled(this, "com.eg.android.AlipayGphone")) {
              } else {
              AlertDialog.Builder alidialog = new AlertDialog.Builder(this);
              alidialog.setCancelable(false); //设置是否可以点击对话框外部取消
@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 
              @Override
              public void onClick(DialogInterface dia, int which) {
-             Toast.makeText(getApplication(), "请安装支付宝！", Toast.LENGTH_SHORT).show();
+             com.shinian.pay.util.AppToast.makeText(getApplication(), "请安装支付宝！", Toast.LENGTH_SHORT).show();
              }
              })
              .create();
@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
              }
 
              //判断微信是否安装
-             if (checkQQInstalled(this, "com.tencent.mm")) {              
+             if (checkQQInstalled(this, "com.tencent.mm")) {
              } else {
              AlertDialog.Builder wxdialog = new AlertDialog.Builder(this);
              wxdialog.setCancelable(false); //设置是否可以点击对话框外部取消
@@ -285,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 
              @Override
              public void onClick(DialogInterface dia, int which) {
-             Toast.makeText(MainActivity.this, "请安装微信！", Toast.LENGTH_SHORT).show();
+             com.shinian.pay.util.AppToast.makeText(MainActivity.this, "请安装微信！", Toast.LENGTH_SHORT).show();
              }
              })
              .create();
@@ -321,8 +321,8 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                         });
                     qx.setNeutralButton("暂不授权", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {     
-                                Toast.makeText(getApplication(), "请给予监听权限！否则无法正常运行", Toast.LENGTH_LONG).show();
+                            public void onClick(DialogInterface dialog, int which) {
+                                com.shinian.pay.util.AppToast.makeText(getApplication(), "请给予监听权限！否则无法正常运行", Toast.LENGTH_LONG).show();
                             }
                         });
                     qx.show();//显示
@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 
         // Upstream anti-tamper dialogs are disabled for this maintained fork.
         if (true) {
-            //Toast.makeText(this, "签名正确", Toast.LENGTH_LONG).show();
+            //com.shinian.pay.util.AppToast.makeText(this, "签名正确", Toast.LENGTH_LONG).show();
         } else {
             AlertDialog.Builder qm = new AlertDialog.Builder(MainActivity.this);
             qm.setIcon(R.drawable.jg);
@@ -411,7 +411,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 
 	}
 
-    /**************************************主线程结束*****************************************/ 
+    /**************************************主线程结束*****************************************/
     /**************************************主线程结束*****************************************/
     /**************************************主线程结束*****************************************/
 
@@ -490,7 +490,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
     }
 
     //检测更新
-    /*public void App() { 
+    /*public void App() {
         //子线程
         Thread thread=new Thread(new Runnable() {
                 @Override
@@ -513,17 +513,17 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                         //获取更新内容
                         show = json.optString("app_update_show");
                         //获取更新地址
-                        url = json.optString("app_update_url");                       
+                        url = json.optString("app_update_url");
                         //是否强制更新
                         update = json.optString("app_update_must");
 						//主题 0为灰色1为正常
 						if (info.equals("0")) {
 							setGraySheme(0);
-							//Toast.makeText(MainActivity.this,info, Toast.LENGTH_SHORT).show();
+							//com.shinian.pay.util.AppToast.makeText(MainActivity.this,info, Toast.LENGTH_SHORT).show();
 						} else {
 							//取消灰色
 							setGraySheme(1);
-						}						
+						}
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -533,7 +533,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                     runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if (code == 200) { 
+                                if (code == 200) {
                                     if (!ver.equals(Constant.Ver)) {
                                         if (update.equals("y")) {
                                             AlertDialog dialog=new AlertDialog.Builder(MainActivity.this)
@@ -576,24 +576,24 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                                             dialog.show();
                                         }
                                     } else {
-                                        //Toast.makeText(MainActivity.this, "已是最新版本~", Toast.LENGTH_LONG).show();
+                                        //com.shinian.pay.util.AppToast.makeText(MainActivity.this, "已是最新版本~", Toast.LENGTH_LONG).show();
                                     }
-                                } else {                            
-                                    //Toast.makeText(MainActivity.this, "检测更新失败", Toast.LENGTH_LONG).show();                                     
+                                } else {
+                                    //com.shinian.pay.util.AppToast.makeText(MainActivity.this, "检测更新失败", Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
                 }
             });
-        thread.start();//启动线程 
+        thread.start();//启动线程
     }*/
-    
+
     public void App() throws Exception{
         //检查版本号是否最新接口
-        String urlPath = new String("http://w.t3yanzheng.com/A729B02347E855EC");  
+        String urlPath = new String("http://w.t3yanzheng.com/A729B02347E855EC");
         //String urlPath = new String("http://localhost:8080/Test1/HelloWorld?name=丁丁".getBytes("UTF-8"));
 
-        
+
         //当前软件版本号
         Version = Integer.parseInt(getAppVersionCode());
         String param="ver=" + URLEncoder.encode(getAppVersionCode(), "UTF-8");
@@ -633,13 +633,13 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
             }
             responseReader.close();
             JSONObject data = new JSONObject(sb.toString());
-            
-            code = data.getInt("code");              
+
+            code = data.getInt("code");
             ver = data.getString("ver");
             version = data.getInt("version");
             uplog = data.getString("uplog");
             upurl = data.getString("upurl");
-            
+
             if(code==200){
               if(version > Version){
                 AlertDialog dialog=new AlertDialog.Builder(MainActivity.this)
@@ -663,14 +663,14 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                 dialog.show();
              }
            }
-        }  
-        
+        }
+
     }
 
-    public String getHtml(String path) throws Exception {  
-        URL url = new URL(path);  
-        HttpURLConnection conn = (HttpURLConnection)url.openConnection();  
-        conn.setRequestMethod("GET");  
+    public String getHtml(String path) throws Exception {
+        URL url = new URL(path);
+        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+        conn.setRequestMethod("GET");
         conn.setConnectTimeout(8 * 1000);
         //通过输入流获取html数据
         InputStream inStream = conn.getInputStream();
@@ -678,20 +678,20 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
         byte[] data = readInputStream(inStream);
         //获取指定字符集解码指定的字节数组构造一个新的字符串
         String html = new String(data, "UTF-8");
-        return html;  
+        return html;
     }
 
     //读取输入流 获取HTML二进制数组
-    public byte[] readInputStream(InputStream inStream) throws Exception {  
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();  
-        byte[] buffer = new byte[1024];  
-        int len = 0;  
-        while ((len = inStream.read(buffer)) != -1) {  
-            outStream.write(buffer, 0, len);  
-        }  
-        inStream.close();  
-        return outStream.toByteArray();  
-    }   
+    public byte[] readInputStream(InputStream inStream) throws Exception {
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        while ((len = inStream.read(buffer)) != -1) {
+            outStream.write(buffer, 0, len);
+        }
+        inStream.close();
+        return outStream.toByteArray();
+    }
 
 
 
@@ -744,7 +744,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 			// 未安装或版本不支持
 			return false;
 		}
-	} 
+	}
 
 
 
@@ -845,7 +845,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                     .setNegativeButton("取消", null)
                     .create();
                 exit.show();
-				/*Toast.makeText(getApplicationContext(), "再按一次退出程序!", Toast.LENGTH_SHORT).show();
+				/*com.shinian.pay.util.AppToast.makeText(getApplicationContext(), "再按一次退出程序!", Toast.LENGTH_SHORT).show();
                  new Thread(new Runnable() {
                  @Override
                  public void run() {
@@ -898,10 +898,10 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                 //群聊
             case R.id.qun:
                 if (joinQQGroup("yy-t5uc2_M6gq66cqFFRDHR4LqQLPCAi")) {
-                    Toast.makeText(this, "正在跳转至反馈群...", Toast.LENGTH_SHORT).show();
+                    com.shinian.pay.util.AppToast.makeText(this, "正在跳转至反馈群...", Toast.LENGTH_SHORT).show();
                 }
                 return true;
-                //分享软件             
+                //分享软件
             case R.id.share:
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
@@ -913,7 +913,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                 return true;
                 //打赏作者
             case R.id.support:
-                /*                 
+                /*
                  Intent intent2 = new Intent();
                  intent2.setClass(MainActivity.this, Pay.class);
                  startActivity(intent2);
@@ -942,9 +942,9 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 									}
                                     //打开微信扫一扫
                                     openWeixinToQE_Code(MainActivity.this);
-                                    //Toast.makeText(MainActivity.this, "收款码已保存至相册,请选择相册收款码打赏~", Toast.LENGTH_LONG).show();
+                                    //com.shinian.pay.util.AppToast.makeText(MainActivity.this, "收款码已保存至相册,请选择相册收款码打赏~", Toast.LENGTH_LONG).show();
 									if (fileIsExists("/sdcard/Pictures/微信赞赏码.png")) {
-										Toast ts = Toast.makeText(MainActivity.this, "赞赏码已保存至相册,请选择相册赞赏码打赏", Toast.LENGTH_LONG);
+										Toast ts = com.shinian.pay.util.AppToast.makeText(MainActivity.this, "赞赏码已保存至相册,请选择相册赞赏码打赏", Toast.LENGTH_LONG);
 										ts.setGravity(Gravity.CENTER, 0, 0);
 										ts.show();
 									} else {
@@ -957,7 +957,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                                     //申请读写权限
                                     requestMyPermissions();
                                     if (pdPermissions()) {
-                                        Toast.makeText(getApplication(), "请再次选择！", Toast.LENGTH_SHORT).show();
+                                        com.shinian.pay.util.AppToast.makeText(getApplication(), "请再次选择！", Toast.LENGTH_SHORT).show();
                                     }
                                 }
 
@@ -970,20 +970,20 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 								 //有读写权限
 								 //获取本地图片bitmap
 								 bitmap_image = BitmapFactory.decodeResource(getResources(), R.drawable.wxpay);
-								 //Toast.makeText(MainActivity.this, bitmap_image.toString(), Toast.LENGTH_LONG).show();
+								 //com.shinian.pay.util.AppToast.makeText(MainActivity.this, bitmap_image.toString(), Toast.LENGTH_LONG).show();
 								 //saveImage("微信赞赏码",bitmap_image);
 								 //调用saveImageToGallery方法 传入上下文 bitmap
 								 //SaveImageUtils.saveImageToGallery(MainActivity.this, bitmap_image);
 								 SaveImageUtils.fileSaveToPublic(MainActivity.this, "微信赞赏码.jpg", bitmap_image);
 								 //打开微信扫一扫
 								 openWeixinToQE_Code(MainActivity.this);
-								 Toast.makeText(MainActivity.this, "收款码已保存至相册,请选择相册收款码打赏~", Toast.LENGTH_LONG).show();
-								 } else { 
+								 com.shinian.pay.util.AppToast.makeText(MainActivity.this, "收款码已保存至相册,请选择相册收款码打赏~", Toast.LENGTH_LONG).show();
+								 } else {
 								 //申请读写权限
-								 requestMyPermissions();                           
+								 requestMyPermissions();
 								 }
 
-								 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {                          
+								 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 								 //判断读写权限
 								 if (pdPermissions()) {
 								 //获取本地图片bitmap
@@ -991,7 +991,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 								 SaveImageUtils.fileSaveToPublic(MainActivity.this, "微信赞赏码", bitmap_image);
 								 //打开微信扫一扫
 								 openWeixinToQE_Code(MainActivity.this);
-								 Toast.makeText(MainActivity.this, "收款码已保存至相册,请选择相册收款码打赏~", Toast.LENGTH_LONG).show();
+								 com.shinian.pay.util.AppToast.makeText(MainActivity.this, "收款码已保存至相册,请选择相册收款码打赏~", Toast.LENGTH_LONG).show();
 								 }else{
 								 //申请读写权限
 								 requestMyPermissions();
@@ -1002,10 +1002,10 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 								 startActivity(wxpay);
 
 								 }*/
-							} else if (fs.equals("支付宝打赏")) {                             
-                                openAliPayPay(ALIPAY_PERSON);                              
+							} else if (fs.equals("支付宝打赏")) {
+                                openAliPayPay(ALIPAY_PERSON);
                                 /*
-                                 Toast.makeText(MainActivity.this, "正在打开支付宝...", Toast.LENGTH_SHORT).show();
+                                 com.shinian.pay.util.AppToast.makeText(MainActivity.this, "正在打开支付宝...", Toast.LENGTH_SHORT).show();
                                  //打开支付宝付款
                                  Uri uri = Uri.parse("https://qr.alipay.com/fkx12542rpb5fljmhxlal35");
                                  Intent intent = new Intent();
@@ -1030,20 +1030,20 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             System.exit(0);
-                            //Toast.makeText(MainActivity.this, "你点击了取消按钮~", Toast.LENGTH_SHORT).show();
+                            //com.shinian.pay.util.AppToast.makeText(MainActivity.this, "你点击了取消按钮~", Toast.LENGTH_SHORT).show();
                         }
                     })
 
                     .setPositiveButton("已阅读并同意", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            //Toast.makeText(MainActivity.this, "你点击了确定按钮~", Toast.LENGTH_SHORT).show();
+                            //com.shinian.pay.util.AppToast.makeText(MainActivity.this, "你点击了确定按钮~", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .setNeutralButton("配置文档", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            //Toast.makeText(MainActivity.this, "你点击了中立按钮~", Toast.LENGTH_SHORT).show();
+                            //com.shinian.pay.util.AppToast.makeText(MainActivity.this, "你点击了中立按钮~", Toast.LENGTH_SHORT).show();
                             Intent help = new Intent();
                             help.setClass(MainActivity.this, HelpActivity.class);
                             startActivity(help);
@@ -1080,9 +1080,9 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
      */
     private void openAliPayPay(String qrCode) {
         if (openAlipayPayPage(this, qrCode)) {
-            Toast.makeText(this, "正在打开...", Toast.LENGTH_SHORT).show();
+            com.shinian.pay.util.AppToast.makeText(this, "正在打开...", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "支付宝打开失败，请检查是否安装支付宝！", Toast.LENGTH_SHORT).show();
+            com.shinian.pay.util.AppToast.makeText(this, "支付宝打开失败，请检查是否安装支付宝！", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1165,7 +1165,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(intent);
         } catch (Exception e) {
-            Toast.makeText(context, "无法跳转到支付宝，请检查是否安装了支付宝", Toast.LENGTH_LONG).show();
+            com.shinian.pay.util.AppToast.makeText(context, "无法跳转到支付宝，请检查是否安装了支付宝", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -1181,7 +1181,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         } catch (Exception e) {
-            Toast.makeText(context, "无法跳转到微信，请检查是否安装了微信", Toast.LENGTH_LONG).show();
+            com.shinian.pay.util.AppToast.makeText(context, "无法跳转到微信，请检查是否安装了微信", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -1195,26 +1195,26 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
             intent.setAction("android.intent.action.VIEW");
             context.startActivity(intent);
         } catch (Exception e) {
-            Toast.makeText(context, "无法跳转到微信，请检查是否安装了微信", Toast.LENGTH_LONG).show();
+            com.shinian.pay.util.AppToast.makeText(context, "无法跳转到微信，请检查是否安装了微信", Toast.LENGTH_LONG).show();
         }
     }
 
-    /** 
-     * 判断 用户是否安装QQ客户端 
-     */  
-    public boolean isQQClientAvailable(Context context) {  
-        final PackageManager packageManager = context.getPackageManager();  
-        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);  
-        if (pinfo != null) {  
-            for (int i = 0; i < pinfo.size(); i++) {  
-                String pn = pinfo.get(i).packageName;  
-                if (pn.equalsIgnoreCase("com.tencent.qqlite") || pn.equalsIgnoreCase("com.tencent.mobileqq")) {  
-                    return true;  
-                }  
-            }  
-        }  
-        return false;  
-    }  
+    /**
+     * 判断 用户是否安装QQ客户端
+     */
+    public boolean isQQClientAvailable(Context context) {
+        final PackageManager packageManager = context.getPackageManager();
+        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
+        if (pinfo != null) {
+            for (int i = 0; i < pinfo.size(); i++) {
+                String pn = pinfo.get(i).packageName;
+                if (pn.equalsIgnoreCase("com.tencent.qqlite") || pn.equalsIgnoreCase("com.tencent.mobileqq")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     /**
      * 判断 Uri是否有效 方法
      */
@@ -1250,7 +1250,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
     public void admin_url(View v) {
         String url = txthost.getText().toString();
         if (url.equals("通知地址：请手动配置")) {
-            Toast.makeText(this, "请先配置数据！", Toast.LENGTH_LONG).show();
+            com.shinian.pay.util.AppToast.makeText(this, "请先配置数据！", Toast.LENGTH_LONG).show();
         } else {
             String Url = url.substring(6);
             Intent intent_d = new Intent();
@@ -1310,7 +1310,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                     String scanResult = inputServer.getText().toString();
                     String[] tmp = ServerUrl.parseConfig(scanResult);
                     if (tmp == null) {
-                        Toast.makeText(MainActivity.this, "数据不能为空或数据错误!", Toast.LENGTH_SHORT).show();
+                        com.shinian.pay.util.AppToast.makeText(MainActivity.this, "数据不能为空或数据错误!", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -1336,7 +1336,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                         });
 
                     if (tmp[0].indexOf("localhost") >= 0) {
-                        Toast.makeText(MainActivity.this, "配置信息错误，本机调试请访问 本机局域网IP:8080(如192.168.1.101:8080) 获取配置信息进行配置!",
+                        com.shinian.pay.util.AppToast.makeText(MainActivity.this, "配置信息错误，本机调试请访问 本机局域网IP:8080(如192.168.1.101:8080) 获取配置信息进行配置!",
                                        Toast.LENGTH_LONG).show();
 
                         return;
@@ -1360,23 +1360,18 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
     }
 
     //检测心跳
-    public void toggleHeartAlert(View view) {
+    public void toggleQuietMode(View view) {
         boolean enabled = ((Switch) view).isChecked();
         getSharedPreferences("ui_settings", MODE_PRIVATE).edit()
-            .putBoolean("heart_alert_enabled", enabled)
+            .putBoolean("quiet_mode_enabled", enabled)
             .apply();
         sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
-            + "\r\r\r\r心跳失败弹窗已" + (enabled ? "开启" : "关闭（心跳与自动重试不受影响）"));
-    }
-
-    private boolean isHeartAlertEnabled() {
-        return getSharedPreferences("ui_settings", MODE_PRIVATE)
-            .getBoolean("heart_alert_enabled", true);
+            + "\r\r\r\r禁止提示弹窗已" + (enabled ? "开启" : "关闭（恢复正常提示）"));
     }
 
     public void doStart(View view) {
         if (isOk == false) {
-            Toast.makeText(MainActivity.this, "请您先配置!", Toast.LENGTH_SHORT).show();
+            com.shinian.pay.util.AppToast.makeText(MainActivity.this, "请您先配置!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -1393,20 +1388,18 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                     final String message = "心跳失败：" + e.getMessage();
                     sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
                         + "\r\r\r\r" + message);
-                    if (isHeartAlertEnabled()) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            com.shinian.pay.util.AppToast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     Looper.prepare();
-                    try { 
+                    try {
                         //解析JSON内容
                         String str = response.body().string();
                         JSONObject result = new JSONObject(str);
@@ -1416,9 +1409,9 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                             //发送心跳监听日志
                             sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\r\r\r\r" + "心跳返回：" + msg);
                             //注意：响应内容在经过JSON和抛异常时需要使用新变量去接收信息进行Toast str
-                            Toast.makeText(MainActivity.this, "心跳返回：" + str, Toast.LENGTH_LONG).show();
+                            com.shinian.pay.util.AppToast.makeText(MainActivity.this, "心跳返回：" + str, Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(MainActivity.this, "心跳返回错误！", Toast.LENGTH_LONG).show();                          
+                            com.shinian.pay.util.AppToast.makeText(MainActivity.this, "心跳返回错误！", Toast.LENGTH_LONG).show();
                         }
                     } catch (JSONException e) {//抛IO流异常 创建JSONobject需抛JSON异常
                         String error = e.getMessage();
@@ -1470,10 +1463,10 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                     /*
                      runOnUiThread(new Runnable() {
                      @Override
-                     public void run() {                         
+                     public void run() {
                      //清空TextView当前内容
                      LogsTextView.setText("日志：null");
-                     }                     
+                     }
                      });
                      */
                 }
@@ -1484,7 +1477,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
         //电量获取
         BatteryManager manager = (BatteryManager)getSystemService(Context.BATTERY_SERVICE);
         capacity = manager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);//当前电量剩余百分比
-        sj_dl.setText("当前电量：" + capacity + "%");   
+        sj_dl.setText("当前电量：" + capacity + "%");
     }
 
     //联系作者
@@ -1540,7 +1533,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
             case R.id.state_logs:
                 String data = LogsTextView.getText().toString();
                 copyStr(data);
-                Toast.makeText(getApplication(), "Log日志已复制到剪贴板！", Toast.LENGTH_LONG).show();
+                com.shinian.pay.util.AppToast.makeText(getApplication(), "Log日志已复制到剪贴板！", Toast.LENGTH_LONG).show();
                 break;
         }
         //当返回true时，将不会产生连带触发，如点击事件
@@ -1582,13 +1575,13 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
     }
 
     //动态申请读写权限
-    private void requestMyPermissions() {      
+    private void requestMyPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             //没有授权，编写申请权限代码
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
         } else {
             Log.d(TAG, "requestMyPermissions: 有写SD权限");
-        }      
+        }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             //没有授权，编写申请权限代码
             ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
@@ -1607,7 +1600,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
         pm.setComponentEnabledSetting(new ComponentName(context, PayNotificationListenerService.class),
                                       PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
 
-        //Toast.makeText(MainActivity.this, "监听服务启动中...", Toast.LENGTH_SHORT).show();
+        //com.shinian.pay.util.AppToast.makeText(MainActivity.this, "监听服务启动中...", Toast.LENGTH_SHORT).show();
     }
     //是否获取通知监听权限
     public boolean isNotificationListenersEnabled() {
@@ -1661,7 +1654,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
-            Toast.makeText(this, "对不起，您的手机暂不支持", Toast.LENGTH_SHORT).show();
+            com.shinian.pay.util.AppToast.makeText(this, "对不起，您的手机暂不支持", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
             return false;
         }
@@ -1678,7 +1671,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 
             String[] tmp = ServerUrl.parseConfig(scanResult);
             if (tmp == null) {
-                Toast.makeText(MainActivity.this, "二维码错误，请您扫描网站上显示的二维码!", Toast.LENGTH_SHORT).show();
+                com.shinian.pay.util.AppToast.makeText(MainActivity.this, "二维码错误，请您扫描网站上显示的二维码!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -1728,7 +1721,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                     startQrCode(null);
                 } else {
                     // 被禁止授权
-                    Toast.makeText(MainActivity.this, "请至权限中心打开本应用的相机访问权限", Toast.LENGTH_LONG).show();
+                    com.shinian.pay.util.AppToast.makeText(MainActivity.this, "请至权限中心打开本应用的相机访问权限", Toast.LENGTH_LONG).show();
                 }
                 break;
             case Constant.REQ_PERM_EXTERNAL_STORAGE:
@@ -1738,7 +1731,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                     startQrCode(null);
                 } else {
                     // 被禁止授权
-                    Toast.makeText(MainActivity.this, "请至权限中心打开本应用的文件读写权限", Toast.LENGTH_LONG).show();
+                    com.shinian.pay.util.AppToast.makeText(MainActivity.this, "请至权限中心打开本应用的文件读写权限", Toast.LENGTH_LONG).show();
                 }
                 break;
         }

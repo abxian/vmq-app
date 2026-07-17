@@ -92,14 +92,14 @@ public class CaptureActivity extends AppCompatActivity implements Callback {
 
         hasSurface = false;
         inactivityTimer = new InactivityTimer(this);
-        
+
         //隐藏标题栏
-        
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
         }
-        
+
 
     }
 
@@ -154,7 +154,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback {
                     CaptureActivity.this.setResult(RESULT_OK, resultIntent);
                     finish();
                 } else {
-                    Toast.makeText(CaptureActivity.this, R.string.note_identify_failed, Toast.LENGTH_SHORT).show();
+                    com.shinian.pay.util.AppToast.makeText(CaptureActivity.this, R.string.note_identify_failed, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -239,7 +239,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback {
         playBeepSoundAndVibrate();
         String resultString = result.getText();
         if (TextUtils.isEmpty(resultString)) {
-            Toast.makeText(CaptureActivity.this, R.string.note_scan_failed, Toast.LENGTH_SHORT).show();
+            com.shinian.pay.util.AppToast.makeText(CaptureActivity.this, R.string.note_scan_failed, Toast.LENGTH_SHORT).show();
         } else {
             Intent resultIntent = new Intent();
             Bundle bundle = getIntent().getExtras();
@@ -356,7 +356,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback {
             try {
                 boolean isSuccess = CameraManager.get().setFlashLight(!isFlashOn);
                 if (!isSuccess) {
-                    Toast.makeText(CaptureActivity.this, R.string.note_no_flashlight, Toast.LENGTH_SHORT).show();
+                    com.shinian.pay.util.AppToast.makeText(CaptureActivity.this, R.string.note_no_flashlight, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (isFlashOn) {
