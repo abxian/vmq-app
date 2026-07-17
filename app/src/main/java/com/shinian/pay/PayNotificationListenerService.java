@@ -90,12 +90,20 @@ public class PayNotificationListenerService extends NotificationListenerService 
                                 @Override
                                 public void onFailure(Call call, IOException e) {
                                     final String error = e.getMessage();
-                                    Handler handlerThree=new Handler(Looper.getMainLooper());
-                                    handlerThree.post(new Runnable(){
-                                            public void run() {
-                                                Toast.makeText(getApplicationContext() , "心跳状态错误，请重新配置或切换网络!" + "\n错误详情：" + error, Toast.LENGTH_LONG).show();
-                                            }
-                                        });
+                                    sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
+                                        + "\r\r\r\r心跳失败（后台将继续自动重试）：" + error);
+                                    boolean alertEnabled = getSharedPreferences("ui_settings", MODE_PRIVATE)
+                                        .getBoolean("heart_alert_enabled", true);
+                                    if (alertEnabled) {
+                                        Handler handlerThree=new Handler(Looper.getMainLooper());
+                                        handlerThree.post(new Runnable(){
+                                                public void run() {
+                                                    Toast.makeText(getApplicationContext(),
+                                                        "心跳失败，后台将继续重试\n" + error,
+                                                        Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                    }
                                 }
                                 //请求成功执行的方法
                                 @Override

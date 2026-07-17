@@ -55,6 +55,7 @@ import android.view.View.OnLongClickListener;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.zxing.activity.CaptureActivity;
@@ -172,6 +173,9 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 		//查找组件
 		txthost = (TextView) findViewById(R.id.txt_host);
 		txtkey = (TextView) findViewById(R.id.txt_key);
+        Switch heartAlertSwitch = (Switch) findViewById(R.id.switch_heart_alert);
+        heartAlertSwitch.setChecked(getSharedPreferences("ui_settings", MODE_PRIVATE)
+            .getBoolean("heart_alert_enabled", true));
         LogsTextView = (TextView) findViewById(R.id.state_logs);
         logs_linear_layout = (LinearLayout) findViewById(R.id.logs_linear_layout);
         LogsTextView.setOnLongClickListener((OnLongClickListener) this);//长按
@@ -1356,6 +1360,20 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
     }
 
     //检测心跳
+    public void toggleHeartAlert(View view) {
+        boolean enabled = ((Switch) view).isChecked();
+        getSharedPreferences("ui_settings", MODE_PRIVATE).edit()
+            .putBoolean("heart_alert_enabled", enabled)
+            .apply();
+        sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
+            + "\r\r\r\r心跳失败弹窗已" + (enabled ? "开启" : "关闭（心跳与自动重试不受影响）"));
+    }
+
+    private boolean isHeartAlertEnabled() {
+        return getSharedPreferences("ui_settings", MODE_PRIVATE)
+            .getBoolean("heart_alert_enabled", true);
+    }
+
     public void doStart(View view) {
         if (isOk == false) {
             Toast.makeText(MainActivity.this, "请您先配置!", Toast.LENGTH_SHORT).show();
@@ -1372,9 +1390,17 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
         call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    Looper.prepare();
-                    Toast.makeText(MainActivity.this, "心跳状态错误，请检查配置是否正确!", Toast.LENGTH_SHORT).show();
-                    Looper.loop();
+                    final String message = "心跳失败：" + e.getMessage();
+                    sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
+                        + "\r\r\r\r" + message);
+                    if (isHeartAlertEnabled()) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
                 }
 
                 @Override

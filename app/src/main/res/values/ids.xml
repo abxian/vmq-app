@@ -27,4 +27,8 @@
     <item type="id" name="return_scan_result" />
     <item type="id" name="search_book_contents_failed" />
     <item type="id" name="search_book_contents_succeeded" />
+    <!-- Kept only for compatibility with unreachable legacy menu handlers. -->
+    <item type="id" name="qun" />
+    <item type="id" name="share" />
+    <item type="id" name="support" />
 </resources>
