@@ -33,7 +33,7 @@ public class ForeService extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i, pendingIntentFlags);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("1", "V免签监控端_Pro核心服务", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel = new NotificationChannel("1", "神仙云收款监控核心服务", NotificationManager.IMPORTANCE_DEFAULT);
             channel.enableLights(true);
             channel.setLightColor(Color.GREEN);
             channel.setShowBadge(true);

@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="V免签监控"
+            android:text="神仙云收款监控"
             android:textColor="#17213B"
             android:textSize="27sp"
             android:textStyle="bold"/>

@@ -6,7 +6,7 @@
     <string name="note_identify_failed">识别失败</string>
     <string name="note_scan_failed">扫描失败</string>
     <string name="note_no_flashlight">暂时无法开启闪光灯</string>
-    <string name="app_name">V免签监控端_Pro</string>
+    <string name="app_name">神仙云收款监控</string>
 	<string name="HelpActivity">帮助文档</string>
     <string name="WxPayActivity">微信打赏</string>
     <string name="SettingActivity">软件设置</string>
