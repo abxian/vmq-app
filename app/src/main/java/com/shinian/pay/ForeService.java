@@ -27,7 +27,10 @@ public class ForeService extends Service {
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         //开始执行
         Intent i = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i, 0);
+        int pendingIntentFlags = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+            ? PendingIntent.FLAG_IMMUTABLE
+            : 0;
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, i, pendingIntentFlags);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("1", "V免签监控端_Pro核心服务", NotificationManager.IMPORTANCE_DEFAULT);
