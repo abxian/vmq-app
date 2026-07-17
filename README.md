@@ -33,7 +33,8 @@ Android：将项目源码导入存储卡/sdcard/AppProjects 目录下 使用AIDE
 
 GitHub Actions：推送到 `main`、提交 Pull Request，或在 Actions 页面手动运行
 `Build Android APK`。构建完成后可在该次运行的 Artifacts 中下载
-`vmq-app-debug-*`。
+`vmq-app-debug-*`。如果仓库的 Actions Artifact 配额已满，可从
+`ci-latest` Release 下载持续更新的 `vmq-app-debug.apk`。
 
 ### 非标准 HTTPS 端口
 
