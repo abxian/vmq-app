@@ -179,9 +179,9 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
         sj_dl = (TextView) findViewById(R.id.sj_dl);
 
 
-        //判断签名校验SHA-1 --检测是否重新签名
-        SignCheck signCheck = new SignCheck(this, "0F:85:43:C2:2E:8E:58:1B:96:88:C6:7C:1E:97:1E:0A:1C:55:D2:5F");
-        if (signCheck.check()) {
+        // This maintained fork is distributed through its own GitHub Actions
+        // signing key, so the upstream certificate lock must not gate startup.
+        if (true) {
             //调用App方法检查更新
             try{
             App();
@@ -360,8 +360,8 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
 			qmjy.show();//显示
         }
 
-        //校验是否有去除签名校验hook 
-        if (checkApplication()) {
+        // Upstream anti-tamper dialogs are disabled for this maintained fork.
+        if (true) {
             //Toast.makeText(this, "签名正确", Toast.LENGTH_LONG).show();
         } else {
             AlertDialog.Builder qm = new AlertDialog.Builder(MainActivity.this);
@@ -384,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
         }
 
         //验签检测动态PM代理
-        if (checkPMProxy()) {         
+        if (true) {
         } else {
             AlertDialog.Builder qm3 = new AlertDialog.Builder(MainActivity.this);
             qm3.setIcon(R.drawable.jg);
