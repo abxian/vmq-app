@@ -271,7 +271,42 @@ public class PayNotificationListenerService extends NotificationListenerService 
 
     }
     //通知回调过程
+    // 直连上报:除了报给 V免签(appPush),同时报给 vpn-web 站点的 /pay/app-notify。
+    // 双报保险 + 后台重试:任一通道通就能开通,失败自动重试 3 次(带退避),修后台掉单。
+    public void directPush(final int type, final double price) {
+        SharedPreferences read = getSharedPreferences("shinian", MODE_PRIVATE);
+        final String dHost = read.getString("direct_host", "");
+        final String dKey = read.getString("direct_key", "");
+        if (dHost == null || dHost.length() == 0 || dKey == null || dKey.length() == 0) {
+            return; // 未配置直连,跳过
+        }
+        new Thread(new Runnable() {
+            public void run() {
+                String t = String.valueOf(new Date().getTime());
+                String sign = md5(type + "" + price + t + dKey);
+                String url = ServerUrl.api(dHost, "/pay/app-notify?t=" + t + "&type=" + type + "&price=" + price + "&sign=" + sign);
+                for (int attempt = 1; attempt <= 3; attempt++) {
+                    try {
+                        String data = getHtml(url);
+                        JSONObject o = new JSONObject(data);
+                        if (o.optInt("code", -1) == 1) {
+                            sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
+                                    + "\r\r\r\r直连上报成功(第" + attempt + "次)：" + price + "元\n" + data);
+                            return;
+                        }
+                    } catch (Exception e) {
+                        // 网络/解析失败,退避后重试
+                    }
+                    try { Thread.sleep(1500L * attempt); } catch (InterruptedException ie) { return; }
+                }
+                sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
+                        + "\r\r\r\r直连上报3次均失败：" + price + "元(V免签通道仍会尝试)");
+            }
+        }).start();
+    }
+
     public void appPush(final int type, final double price) {
+        directPush(type, price); // 同时直连上报 vpn-web(双报)
         SharedPreferences read = getSharedPreferences("shinian", MODE_PRIVATE);
         host = read.getString("host", "");
         key = read.getString("key", "");

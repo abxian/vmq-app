@@ -1308,7 +1308,17 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                 public void onClick(DialogInterface dialog, int which) {
 
                     String scanResult = inputServer.getText().toString();
-                    String[] tmp = ServerUrl.parseConfig(scanResult);
+                    // 扩展格式:V免签配置 用 ; 追加直连配置 → "vmqHost/vmqKey;directHost/directKey"
+                    // directHost 填 vpn-web 站点地址,directKey 填后台「直连支付」的 key。无第二段=不启用直连。
+                    String directHost = "", directKey = "";
+                    String mainCfg = scanResult;
+                    int semi = scanResult == null ? -1 : scanResult.indexOf(';');
+                    if (semi > 0) {
+                        mainCfg = scanResult.substring(0, semi);
+                        String[] dparts = ServerUrl.parseConfig(scanResult.substring(semi + 1));
+                        if (dparts != null) { directHost = dparts[0]; directKey = dparts[1]; }
+                    }
+                    String[] tmp = ServerUrl.parseConfig(mainCfg);
                     if (tmp == null) {
                         com.shinian.pay.util.AppToast.makeText(MainActivity.this, "数据不能为空或数据错误!", Toast.LENGTH_SHORT).show();
                         return;
@@ -1352,7 +1362,12 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
                     SharedPreferences.Editor editor = getSharedPreferences("shinian", MODE_PRIVATE).edit();
                     editor.putString("host", host);
                     editor.putString("key", key);
+                    editor.putString("direct_host", directHost);
+                    editor.putString("direct_key", directKey);
                     editor.commit();
+                    if (directHost.length() > 0) {
+                        com.shinian.pay.util.AppToast.makeText(MainActivity.this, "已启用直连上报：" + directHost, Toast.LENGTH_SHORT).show();
+                    }
 
                 }
             });
