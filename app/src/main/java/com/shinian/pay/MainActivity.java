@@ -55,6 +55,7 @@ import android.view.View.OnLongClickListener;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -1281,94 +1282,93 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
         startActivityForResult(intent, Constant.REQ_QR_CODE);
     }
 
-    //手动配置
+    //手动配置:V免签 与 直连 分别填写
     public void doInput(View v) {
-        final EditText inputServer = new EditText(this);
+        SharedPreferences read = getSharedPreferences("shinian", MODE_PRIVATE);
+        int density = (int) getResources().getDisplayMetrics().density;
+        int pad = 16 * density;
+
+        final EditText inHost = new EditText(this);
+        inHost.setHint("V免签通知地址，如 https://pay.sxnn.de:5443");
+        inHost.setText(read.getString("host", ""));
+        final EditText inKey = new EditText(this);
+        inKey.setHint("V免签通讯密钥");
+        inKey.setText(read.getString("key", ""));
+        final EditText inDHost = new EditText(this);
+        inDHost.setHint("直连地址(网站)，如 https://sxnn.de（可留空）");
+        inDHost.setText(read.getString("direct_host", ""));
+        final EditText inDKey = new EditText(this);
+        inDKey.setHint("直连密钥(后台「直连支付」key，可留空)");
+        inDKey.setText(read.getString("direct_key", ""));
+
+        LinearLayout ll = new LinearLayout(this);
+        ll.setOrientation(LinearLayout.VERTICAL);
+        ll.setPadding(pad, pad / 2, pad, 0);
+        TextView t1 = new TextView(this);
+        t1.setText("① V免签（收款监控网关，必填）");
+        TextView t2 = new TextView(this);
+        t2.setText("② 直连（直报网站，可选，与 V免签 互不影响）");
+        t2.setPadding(0, pad, 0, 0);
+        ll.addView(t1); ll.addView(inHost); ll.addView(inKey);
+        ll.addView(t2); ll.addView(inDHost); ll.addView(inDKey);
+        ScrollView sv = new ScrollView(this);
+        sv.addView(ll);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("请输入配置数据").setView(inputServer);
+        builder.setTitle("配置（V免签 / 直连 分别填）").setView(sv);
         builder.setIcon(R.drawable.icon_pzsj);
-        //builder.setMessage("PS：请输入网站后台显示的配置数据！");
-        builder.setCancelable(false); //设置是否可以点击对话框外部取消
+        builder.setCancelable(false);
 
         builder.setNeutralButton("如何配置?", new DialogInterface.OnClickListener() {
-
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    //配置文档activity
                     Intent help = new Intent();
                     help.setClass(MainActivity.this, HelpActivity.class);
                     startActivity(help);
                 }
             });
-
         builder.setNegativeButton("取消", null);
-
         builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
-
                 public void onClick(DialogInterface dialog, int which) {
-
-                    String scanResult = inputServer.getText().toString();
-                    // 扩展格式:V免签配置 用 ; 追加直连配置 → "vmqHost/vmqKey;directHost/directKey"
-                    // directHost 填 vpn-web 站点地址,directKey 填后台「直连支付」的 key。无第二段=不启用直连。
-                    String directHost = "", directKey = "";
-                    String mainCfg = scanResult;
-                    int semi = scanResult == null ? -1 : scanResult.indexOf(';');
-                    if (semi > 0) {
-                        mainCfg = scanResult.substring(0, semi);
-                        String[] dparts = ServerUrl.parseConfig(scanResult.substring(semi + 1));
-                        if (dparts != null) { directHost = dparts[0]; directKey = dparts[1]; }
-                    }
-                    String[] tmp = ServerUrl.parseConfig(mainCfg);
-                    if (tmp == null) {
-                        com.shinian.pay.util.AppToast.makeText(MainActivity.this, "数据不能为空或数据错误!", Toast.LENGTH_SHORT).show();
+                    String h = inHost.getText().toString().trim();
+                    String k = inKey.getText().toString().trim();
+                    final String dHost = inDHost.getText().toString().trim();
+                    final String dKey = inDKey.getText().toString().trim();
+                    if (h.length() == 0 || k.length() == 0) {
+                        com.shinian.pay.util.AppToast.makeText(MainActivity.this, "V免签 地址和密钥必填！", Toast.LENGTH_SHORT).show();
                         return;
                     }
-
+                    if (h.indexOf("localhost") >= 0) {
+                        com.shinian.pay.util.AppToast.makeText(MainActivity.this, "本机调试请填 局域网IP:8080，不要用 localhost！", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    // V免签 心跳自检(不阻塞保存,仅提示)
                     String t = String.valueOf(new Date().getTime());
-                    String sign = md5(t + tmp[1]);
-
+                    String sign = md5(t + k);
                     OkHttpClient okHttpClient = new OkHttpClient();
-                    Request request = new Request.Builder().url(ServerUrl.api(tmp[0], "/appHeart?t=" + t + "&sign=" + sign))
-                        .method("GET", null).build();
-                    Call call = okHttpClient.newCall(request);
-                    call.enqueue(new Callback() {
-                            @Override
-                            public void onFailure(Call call, IOException e) {
-
+                    Request request = new Request.Builder().url(ServerUrl.api(h, "/appHeart?t=" + t + "&sign=" + sign)).method("GET", null).build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                            @Override public void onFailure(Call call, IOException e) {
+                                sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\r\r\r\rV免签地址自检失败：" + e.getMessage());
                             }
-
-                            @Override
-                            public void onResponse(Call call, Response response) throws IOException {
-                                Log.d(TAG, "onResponse: " + response.body().string());
-                                isOk = true;
-
+                            @Override public void onResponse(Call call, Response response) throws IOException {
+                                isOk = true; Log.d(TAG, "appHeart: " + response.body().string());
                             }
                         });
 
-                    if (tmp[0].indexOf("localhost") >= 0) {
-                        com.shinian.pay.util.AppToast.makeText(MainActivity.this, "配置信息错误，本机调试请访问 本机局域网IP:8080(如192.168.1.101:8080) 获取配置信息进行配置!",
-                                       Toast.LENGTH_LONG).show();
-
-                        return;
-                    }
-                    //检查电池白名单权限
-                    ignoreBatteryOptimization(MainActivity.this);
-                    //将配置的信息显示出来
-                    txthost.setText(" 通知地址：" + tmp[0]);
-                    txtkey.setText(" 通讯密钥：" + tmp[1]);
-                    host = tmp[0];
-                    key = tmp[1];
-
+                    host = h; key = k;
+                    txthost.setText(" 通知地址：" + h);
+                    txtkey.setText(" 通讯密钥：" + k);
                     SharedPreferences.Editor editor = getSharedPreferences("shinian", MODE_PRIVATE).edit();
-                    editor.putString("host", host);
-                    editor.putString("key", key);
-                    editor.putString("direct_host", directHost);
-                    editor.putString("direct_key", directKey);
+                    editor.putString("host", h);
+                    editor.putString("key", k);
+                    editor.putString("direct_host", dHost);
+                    editor.putString("direct_key", dKey);
                     editor.commit();
-                    if (directHost.length() > 0) {
-                        com.shinian.pay.util.AppToast.makeText(MainActivity.this, "已启用直连上报：" + directHost, Toast.LENGTH_SHORT).show();
-                    }
-
+                    ignoreBatteryOptimization(MainActivity.this);
+                    com.shinian.pay.util.AppToast.makeText(MainActivity.this,
+                        dHost.length() > 0 ? "已保存，直连上报已启用：" + dHost : "已保存（未填直连=仅 V免签）",
+                        Toast.LENGTH_SHORT).show();
                 }
             });
         builder.show();
