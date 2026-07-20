@@ -155,11 +155,12 @@ public class PayNotificationListenerService extends NotificationListenerService 
                                 if (money == null || money.equals("")) {
                                     money = getMoney(content);
                                 }
-                                if (money != null || !money.equals("")) {
+                                Double amt = parseMoney(money);
+                                if (amt != null) {
                                     com.shinian.pay.util.AppToast.makeText(this, "匹配成功： 微信到账" + money + "元", Toast.LENGTH_LONG).show();
                                     Log.d(TAG, "onAccessibilityEvent: 匹配成功： 微信到账 " + money + "元");
-                                    appPush(1, Double.valueOf(money));
-                                    //appPush2(1, Double.valueOf(money));//再次发送回调数据
+                                    appPush(1, amt);
+                                    //appPush2(1, amt);//再次发送回调数据
                                 } else {
                                     Handler handlerThree=new Handler(Looper.getMainLooper());
                                     handlerThree.post(new Runnable(){
@@ -183,11 +184,12 @@ public class PayNotificationListenerService extends NotificationListenerService 
                             if (money == null || money.equals("")) {
                                 money = getMoney(content);
                             }
-                            if (money != null || !money.equals("")) {
+                            Double amt = parseMoney(money);
+                            if (amt != null) {
                                 com.shinian.pay.util.AppToast.makeText(this, "匹配成功： 支付宝到账" + money + "元", Toast.LENGTH_LONG).show();
                                 Log.d(TAG, "onAccessibilityEvent: 匹配成功： 支付宝到账 " + money + "元");
-                                appPush(2, Double.valueOf(money));
-                                //appPush2(2, Double.valueOf(money));//再次发送回调数据
+                                appPush(2, amt);
+                                //appPush2(2, amt);//再次发送回调数据
                             } else {
                                 Handler handlerThree=new Handler(Looper.getMainLooper());
                                 handlerThree.post(new Runnable(){
@@ -208,11 +210,12 @@ public class PayNotificationListenerService extends NotificationListenerService 
                             if (money == null || !money.equals("")) {
                                 money = getMoney(title);
                             }
-                            if (money != null || !money.equals("")) {
+                            Double amt = parseMoney(money);
+                            if (amt != null) {
                                 com.shinian.pay.util.AppToast.makeText(this, "匹配成功： 支付宝店员到账" + money + "元", Toast.LENGTH_LONG).show();
                                 Log.d(TAG, "onAccessibilityEvent: 匹配成功： 支付宝店员到账 " + money + "元");
-                                appPush(2, Double.valueOf(money));
-                                //appPush2(2, Double.valueOf(money));//再次发送回调数据
+                                appPush(2, amt);
+                                //appPush2(2, amt);//再次发送回调数据
                             } else {
                                 Handler handlerThree=new Handler(Looper.getMainLooper());
                                 handlerThree.post(new Runnable(){
@@ -390,19 +393,35 @@ public class PayNotificationListenerService extends NotificationListenerService 
     }
 
 
+    // 从通知文本里提取金额：只匹配「整数 或 带1~2位小数」的数字，取最后一个。
+    // 旧实现用 [^0-9.] 切分会把 "." / "1.2.3" 这类脏串当金额，导致 Double 解析崩溃。
     public static String getMoney(String content) {
-
-        List<String> ss = new ArrayList<String>();
-        for (String sss:content.replaceAll("[^0-9.]", ",").split(",")) {
-            if (sss.length() > 0)
-                ss.add(sss);
-        }
-        if (ss.size() < 1) {
+        if (content == null) {
             return null;
-        } else {
-            return ss.get(ss.size() - 1);
         }
+        java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("[0-9]+(?:\\.[0-9]{1,2})?").matcher(content);
+        String last = null;
+        while (m.find()) {
+            last = m.group();
+        }
+        return last;
+    }
 
+    // 安全解析金额：非法/非正数返回 null，绝不抛 NumberFormatException（修闪退根因）。
+    public static Double parseMoney(String s) {
+        if (s == null || s.length() == 0) {
+            return null;
+        }
+        try {
+            double v = Double.parseDouble(s);
+            if (v <= 0 || Double.isNaN(v) || Double.isInfinite(v)) {
+                return null;
+            }
+            return v;
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
     public static String md5(String string) {
         if (TextUtils.isEmpty(string)) {
