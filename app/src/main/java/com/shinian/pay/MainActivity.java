@@ -1384,56 +1384,62 @@ public class MainActivity extends AppCompatActivity implements OnLongClickListen
             + "\r\r\r\r禁止提示弹窗已" + (enabled ? "开启" : "关闭（恢复正常提示）"));
     }
 
+    // 检测心跳:V免签 与 直连 分别测试,分别显示是哪一个通/不通
     public void doStart(View view) {
-        if (isOk == false) {
-            com.shinian.pay.util.AppToast.makeText(MainActivity.this, "请您先配置!", Toast.LENGTH_SHORT).show();
-            return;
+        SharedPreferences read = getSharedPreferences("shinian", MODE_PRIVATE);
+        String h = read.getString("host", "");
+        String k = read.getString("key", "");
+        String dHost = read.getString("direct_host", "");
+        String dKey = read.getString("direct_key", "");
+
+        // ① V免签
+        if (h.length() == 0 || k.length() == 0) {
+            reportHeart("① V免签", false, "未配置");
+        } else {
+            String t = String.valueOf(new Date().getTime());
+            testHeart("① V免签", ServerUrl.api(h, "/appHeart?t=" + t + "&sign=" + md5(t + k)));
         }
+        // ② 直连(神仙云网站),可选
+        if (dHost.length() == 0 || dKey.length() == 0) {
+            sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\r\r\r\r② 神仙云直连 未配置（可选）");
+        } else {
+            testHeart("② 神仙云直连", ServerUrl.api(dHost, "/pay/ping"));
+        }
+    }
 
-        String t = String.valueOf(new Date().getTime());
-        String sign = md5(t + key);
-
+    // 通用心跳测试:请求 url,返回 JSON 且 code==1 视为正常;分别上报结果
+    private void testHeart(final String label, String url) {
         OkHttpClient okHttpClient = new OkHttpClient();
-        Request request = new Request.Builder().url(ServerUrl.api(host, "/appHeart?t=" + t + "&sign=" + sign))
-            .method("GET", null).build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
+        Request request = new Request.Builder().url(url).method("GET", null).build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    final String message = "心跳失败：" + e.getMessage();
-                    sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
-                        + "\r\r\r\r" + message);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            com.shinian.pay.util.AppToast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    reportHeart(label, false, "连不上：" + e.getMessage());
                 }
-
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    Looper.prepare();
+                    String str = response.body().string();
+                    boolean ok = false;
+                    String detail = str;
                     try {
-                        //解析JSON内容
-                        String str = response.body().string();
-                        JSONObject result = new JSONObject(str);
-                        int code = result.getInt("code");
-                        String msg = result.getString("msg");
-                        if (code == 1 && msg.equals("成功")) {
-                            //发送心跳监听日志
-                            sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\r\r\r\r" + "心跳返回：" + msg);
-                            //注意：响应内容在经过JSON和抛异常时需要使用新变量去接收信息进行Toast str
-                            com.shinian.pay.util.AppToast.makeText(MainActivity.this, "心跳返回：" + str, Toast.LENGTH_LONG).show();
-                        } else {
-                            com.shinian.pay.util.AppToast.makeText(MainActivity.this, "心跳返回错误！", Toast.LENGTH_LONG).show();
-                        }
-                    } catch (JSONException e) {//抛IO流异常 创建JSONobject需抛JSON异常
-                        String error = e.getMessage();
-                        //发送监听日志
-                        sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\r\r\r\r" + "心跳错误：" + error);
+                        JSONObject o = new JSONObject(str);
+                        ok = o.optInt("code", -1) == 1;
+                        if (!ok) detail = "返回：" + str;
+                    } catch (Exception ex) {
+                        detail = "响应不是JSON（地址可能填错或被代理劫持）：" + (str.length() > 60 ? str.substring(0, 60) : str);
                     }
-                    Looper.loop();
+                    reportHeart(label, ok, detail);
+                }
+            });
+    }
+
+    private void reportHeart(final String label, final boolean ok, final String detail) {
+        final String msg = (ok ? "✅ " : "❌ ") + label + (ok ? " 正常" : " 失败：" + detail);
+        sendMonitorLogs(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\r\r\r\r" + msg);
+        runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    com.shinian.pay.util.AppToast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
                 }
             });
     }

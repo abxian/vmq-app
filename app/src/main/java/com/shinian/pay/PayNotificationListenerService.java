@@ -79,6 +79,12 @@ public class PayNotificationListenerService extends NotificationListenerService 
                         host = read.getString("host", "");
                         key = read.getString("key", "");
 
+                        // host 为空时跳过本次心跳,避免拼出 http:///appHeart 报「resolve host appheart」
+                        if (host == null || host.trim().length() == 0) {
+                            try { Thread.sleep(30000); } catch (InterruptedException ie) { return; }
+                            continue;
+                        }
+
                         //这里写入子线程需要做的工作
                         String t = String.valueOf(new Date().getTime());
                         String sign = md5(t + key);
